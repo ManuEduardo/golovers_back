@@ -1,4 +1,4 @@
-package utp.edu.pe.bsckendgroup.Infra;
+package utp.edu.pe.bsckendgroup.Infra.Jwt;
 
 public record DataLoginStudent(
         String email,

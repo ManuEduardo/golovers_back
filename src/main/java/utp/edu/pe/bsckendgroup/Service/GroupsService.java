@@ -1,7 +1,5 @@
 package utp.edu.pe.bsckendgroup.Service;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import utp.edu.pe.bsckendgroup.Domain.ColumnKanban.ColumnKanban;
@@ -18,7 +16,6 @@ import utp.edu.pe.bsckendgroup.Domain.UserGroup.DataRegisterUserGroup;
 import utp.edu.pe.bsckendgroup.Domain.UserGroup.UserGroup;
 import utp.edu.pe.bsckendgroup.Domain.UserGroup.UserGroupRepository;
 
-import javax.swing.text.html.Option;
 import java.util.*;
 
 @Service
@@ -37,108 +34,110 @@ public class GroupsService {
     private ColumnKanbanRepository columnKanbanRepository;
 
     public DataListGroupUtp createGroup(DataRegisterGroupUtp group) {
-        Optional<Student> student = Optional.ofNullable(studentRepository.findById(group.studentId())
-                .orElseThrow(() -> new RuntimeException("Student not found")));
+        Student student = studentRepository.findById(group.studentId())
+                .orElseThrow(() -> new RuntimeException("Student not found"));
 
-        Optional<GroupUtp> groupUtpOptional = Optional.ofNullable(groupUtpRepository.findByName(group.name()));
-
-        if (groupUtpOptional.isPresent()) return null;
+        if (groupUtpRepository.findByName(group.name()).isPresent()) {
+            return null;
+        }
 
         GroupUtp newGroupUtp = new GroupUtp(group);
-        newGroupUtp.setCode(generateCode());
+        newGroupUtp.setCode(generateUniqueCode());
         groupUtpRepository.save(newGroupUtp);
-        GroupUtp groupUtp = groupUtpRepository.findByName(group.name());
 
-        Kanban kanban = createKanban(groupUtp.getId());
-        createColumnsKanban(kanban.getId());
+        Kanban kanban = createKanban(newGroupUtp.getId());
+        if (kanban != null) {
+            createColumnsKanban(kanban.getId());
+        }
 
         DataRegisterUserGroup userGroup = new DataRegisterUserGroup(
-                student.get().getId(),
-                groupUtp.getId(),
+                student.getId(),
+                newGroupUtp.getId(),
                 1L
         );
         userGroupRepository.save(new UserGroup(userGroup));
-        return new DataListGroupUtp(groupUtp);
+
+        return new DataListGroupUtp(newGroupUtp);
     }
 
     public List<DataListGroupUtp> getGroups() {
-        List<GroupUtp> groups = groupUtpRepository.findAll();
-        return groups.stream().map(DataListGroupUtp::new).toList();
+        return groupUtpRepository.findAll().stream()
+                .map(DataListGroupUtp::new)
+                .toList();
     }
 
     public DataListGroupUtp getGroupByCode(String code) {
-        Optional<GroupUtp> groupUtp = Optional.ofNullable(groupUtpRepository.findByCode(code)
-                .orElseThrow(() -> new RuntimeException("Group not found")));
-        return groupUtp.map(DataListGroupUtp::new).orElse(null);
+        GroupUtp groupUtp = groupUtpRepository.findByCode(code)
+                .orElseThrow(() -> new RuntimeException("Group not found"));
+        return new DataListGroupUtp(groupUtp);
     }
 
-    public boolean joinGroup(DataNewMemberGroup data) {
-        DataNewMemberGroup newData = new DataNewMemberGroup(data.idStudent(), data.code().toLowerCase());
-        Optional<Student> student = Optional.ofNullable(studentRepository.findById(data.idStudent())
-                .orElseThrow(() -> new RuntimeException("Student not found")));
-        Optional<GroupUtp> groupUtp = Optional.ofNullable(groupUtpRepository.findByCode(newData.code())
-                .orElseThrow(() -> new RuntimeException("Group not found")));
-        List<UserGroup> userGroupOptional = userGroupRepository.findByUserIdAndGroupId(student.get().getId(), groupUtp.get().getId());
+    public DataListGroupUtp joinGroup(DataNewMemberGroup data) {
+        Student student = studentRepository.findById(data.idStudent())
+                .orElseThrow(() -> new RuntimeException("Student not found"));
 
-        if (userGroupOptional.isEmpty()) {
+        Optional<GroupUtp> groupUtp = groupUtpRepository.findByCode(data.code().toLowerCase());
+        if (groupUtp.isEmpty()) {
+            new RuntimeException("Group not found");
+        }
+        if (userGroupRepository.findByUserIdAndGroupId(groupUtp.get().getId()).isEmpty()) {
             DataRegisterUserGroup userGroup = new DataRegisterUserGroup(
-                    student.get().getId(),
+                    student.getId(),
                     groupUtp.get().getId(),
                     2L
             );
             userGroupRepository.save(new UserGroup(userGroup));
-            return true;
+            return new DataListGroupUtp(groupUtp.get());
         }
-        return false;
+        return null;
     }
 
     public List<DataListGroupUtp> getGroupsByStudent(Long idStudent) {
         return groupUtpRepository.findByStudent(idStudent);
     }
 
-    private @NotNull String generateCode() {
+    private String generateUniqueCode() {
         String characters = "123456789abcdefghijklmnopqrstuvwxyz";
         Random random = new Random();
-        StringBuilder code = new StringBuilder();
 
         List<GroupUtp> groups = groupUtpRepository.findAll();
-        if (groups.isEmpty()) {
-            for (int i = 0; i < 5; i++) {
-                int index = random.nextInt(characters.length());
-                code.append(characters.charAt(index));
-            }
-            return code.toString();
-        }
-        boolean isUnique = false;
-        while (!isUnique) {
-            for (int i = 0; i < 5; i++) {
-                int index = random.nextInt(characters.length());
-                code.append(characters.charAt(index));
-            }
-            isUnique = groups.stream().noneMatch(group -> group.getCode().equals(code.toString()));
-        }
-        return code.toString();
+        String code;
+        boolean isUnique;
+
+        do {
+            code = random.ints(5, 0, characters.length())
+                    .mapToObj(characters::charAt)
+                    .collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
+                    .toString();
+            String finalCode = code;
+            isUnique = groups.stream().noneMatch(group -> group.getCode().equals(finalCode));
+        } while (!isUnique);
+
+        return code;
     }
 
-    private boolean createColumnsKanban(Long idGroup){
-        Optional<Kanban> kanban = kanbanRepository.findById(idGroup);
-        if (kanban.isEmpty()) return false;
-        List<TypeColumn> typeColumns = typeColumnRepository.findAll();
-        List<DataRegisterColumnKanban> columns = Arrays.asList(
-            new DataRegisterColumnKanban(kanban.get().getId(), typeColumns.get(0).getId(), "#DFECF5",typeColumns.get(0).getName(), 1),
-            new DataRegisterColumnKanban(kanban.get().getId(), typeColumns.get(1).getId(), "#DFF5E5 ",typeColumns.get(1).getName(), 2),
-            new DataRegisterColumnKanban(kanban.get().getId(), typeColumns.get(2).getId(), "#F9BFB2",typeColumns.get(2).getName(), 3)
-        );
-        for (DataRegisterColumnKanban column : columns) {
-            columnKanbanRepository.save(new ColumnKanban(column));
-        }
-        return true;
+    private boolean createColumnsKanban(Long idGroup) {
+        return kanbanRepository.findById(idGroup)
+                .map(kanban -> {
+                    List<TypeColumn> typeColumns = typeColumnRepository.findAll();
+                    List<DataRegisterColumnKanban> columns = Arrays.asList(
+                            new DataRegisterColumnKanban(kanban.getId(), typeColumns.get(0).getId(), "#DFECF5", typeColumns.get(0).getName(), 1),
+                            new DataRegisterColumnKanban(kanban.getId(), typeColumns.get(1).getId(), "#DFF5E5", typeColumns.get(1).getName(), 2),
+                            new DataRegisterColumnKanban(kanban.getId(), typeColumns.get(2).getId(), "#F9BFB2", typeColumns.get(2).getName(), 3)
+                    );
+                    columns.forEach(column -> columnKanbanRepository.save(new ColumnKanban(column)));
+                    return true;
+                })
+                .orElse(false);
     }
-    private @Nullable Kanban createKanban(Long idGroup){
-        Optional<GroupUtp> groupUtp = groupUtpRepository.findById(idGroup);
-        if (groupUtp.isEmpty()) return null;
-        String name = "Kanban-"+groupUtp.get().getName()+"-"+groupUtp.get().getCode();
-        kanbanRepository.save(new Kanban(null, groupUtp.get(), name));
-        return kanbanRepository.findByName(name);
+
+    private Kanban createKanban(Long idGroup) {
+        return groupUtpRepository.findById(idGroup)
+                .map(groupUtp -> {
+                    String name = "Kanban-" + groupUtp.getName() + "-" + groupUtp.getCode();
+                    kanbanRepository.save(new Kanban(null, groupUtp, name));
+                    return kanbanRepository.findByName(name);
+                })
+                .orElse(null);
     }
 }

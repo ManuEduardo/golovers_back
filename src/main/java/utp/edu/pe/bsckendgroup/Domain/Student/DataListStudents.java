@@ -5,7 +5,6 @@ public record DataListStudents(
         String name,
         String lastName,
         String email,
-        String password,
         int ciclo
 ) {
     public DataListStudents(Student student) {
@@ -14,7 +13,6 @@ public record DataListStudents(
                 student.getName(),
                 student.getLastName(),
                 student.getEmail(),
-                student.getPassword(),
                 student.getCiclo()
         );
     }

@@ -1,9 +1,11 @@
 package utp.edu.pe.bsckendgroup.Service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import utp.edu.pe.bsckendgroup.Domain.Student.*;
-import utp.edu.pe.bsckendgroup.Infra.DataLoginStudent;
+import utp.edu.pe.bsckendgroup.Infra.Jwt.DataLoginStudent;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,9 +14,11 @@ import java.util.Optional;
 public class StudentService {
     @Autowired
     private StudentRepository studentRepository;
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public boolean registerStudent(DataRegisterStudent student) {
-        Optional<Student> studentOptional = studentRepository.findByEmail(student.email());
+        Optional<Student> studentOptional = studentRepository.findByUsername(student.email());
         if (studentOptional.isPresent()) {
             throw new RuntimeException("Email already exists");
         }
@@ -23,7 +27,7 @@ public class StudentService {
     }
 
     public Student getStudentByEmail(String email) {
-        return studentRepository.findByEmail(email)
+        return studentRepository.findByUsername(email)
                 .orElseThrow(() -> new RuntimeException("Student not found"));
     }
 
@@ -55,12 +59,20 @@ public class StudentService {
     }
 
     public Student login(DataLoginStudent data) {
-        Student student = studentRepository.findByEmail(data.email())
+        Student student = studentRepository.findByUsername(data.email())
                 .orElseThrow(() -> new RuntimeException("Student not found"));
         if (student.getPassword().equals(data.password())) {
             return student;
         } else {
             throw new RuntimeException("Invalid password");
         }
+    }
+
+    public boolean save(DataRegisterStudent data) {
+        String encryptedPassword = bCryptPasswordEncoder.encode(data.password());
+        Student student = new Student(data);
+        student.setPassword(encryptedPassword);
+        studentRepository.save(student);
+        return true;
     }
 }

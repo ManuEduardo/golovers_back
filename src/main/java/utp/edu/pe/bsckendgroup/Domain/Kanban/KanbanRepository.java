@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface KanbanRepository extends JpaRepository<Kanban, Long>{
     @Query("""
@@ -20,4 +21,7 @@ public interface KanbanRepository extends JpaRepository<Kanban, Long>{
 
     @Query("SELECT k FROM Kanban k WHERE k.name = ?1")
     Kanban findByName(String name);
+
+    @Query("SELECT k FROM Kanban k WHERE k.groupUtp.id = ?1")
+    Optional<Kanban> findByGroupId(Long idGroup);
 }

@@ -1,13 +1,13 @@
-package utp.edu.pe.utp_group_api;
+package utp.edu.pe.bsckendgroup;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class UtpGroupApiApplication {
+public class BsckendGroupApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(UtpGroupApiApplication.class, args);
+        SpringApplication.run(BsckendGroupApplication.class, args);
     }
 
 }

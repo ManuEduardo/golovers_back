@@ -39,7 +39,7 @@ public class Notice {
                 new Student(data.studentId()),
                 new GroupUtp(data.groupId()),
                 data.message(),
-                data.dateTime()
+                LocalDateTime.now()
         );
     }
     public Notice(DataUpdateNotice data){

@@ -7,7 +7,6 @@ import java.time.LocalDateTime;
 public record DataRegisterNotice(
         @NotNull Long studentId,
         @NotNull Long groupId,
-        @NotNull String message,
-        @NotNull LocalDateTime dateTime
+        @NotNull String message
 ) {
 }

@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface GroupUtpRepository extends JpaRepository<GroupUtp, Long> {
     @Query("SELECT g FROM GroupUtp g WHERE g.name = ?1")
-    GroupUtp findByName(String name);
+    Optional<GroupUtp> findByName(String name);
 
     @Query("SELECT g FROM GroupUtp g WHERE g.code = ?1")
     Optional<GroupUtp> findByCode(String code);

@@ -14,4 +14,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
         GROUP BY f.id
     """)
     List<DataParticipationStudent> getPartisipation(Long idKanban);
+
+    @Query("SELECT t FROM Task t WHERE t.kanban.id = ?1")
+    List<DataListTask> findByKanbanId(Long id);
 }
