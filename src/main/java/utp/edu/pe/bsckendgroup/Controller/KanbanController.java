@@ -27,4 +27,5 @@ public class KanbanController {
     public ResponseEntity<?> getParticipation(@PathVariable Long idKanban) {
         return ResponseEntity.ok(kanbanService.getParticipation(idKanban));
     }
+
 }
