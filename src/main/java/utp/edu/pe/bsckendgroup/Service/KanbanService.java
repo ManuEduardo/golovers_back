@@ -18,6 +18,7 @@ import utp.edu.pe.bsckendgroup.ServicesDto.DataListKanbanAnColumns;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class KanbanService {
@@ -55,8 +56,20 @@ public class KanbanService {
     public List<DataParticipationStudent> getParticipation(Long idKanban) {
         Kanban kanban = kanbanRepository.findById(idKanban)
                 .orElseThrow(() -> new RuntimeException("Kanban not found"));
-        List<DataParticipationStudent> participationStudents =  taskRepository.getPartisipation(kanban.getId());
-        return participationStudents;
-    }
+        List<DataParticipationStudent> participationStudents = taskRepository.getPartisipation(kanban.getId());
 
+        if (participationStudents.isEmpty()) {
+            return participationStudents;
+        }
+        double totalPriority = participationStudents.stream()
+                .mapToDouble(DataParticipationStudent::sumPriority)
+                .sum();
+        List<DataParticipationStudent> participationInPercentage = participationStudents.stream()
+                .map(student -> {
+                    double participationPercentage = (student.sumPriority() / totalPriority) * 100;
+                    return new DataParticipationStudent(student.studentId(), participationPercentage, totalPriority);
+                })
+                .collect(Collectors.toList());
+        return participationInPercentage;
+    }
 }

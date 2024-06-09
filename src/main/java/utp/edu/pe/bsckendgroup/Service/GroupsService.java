@@ -93,7 +93,11 @@ public class GroupsService {
     }
 
     public List<DataListGroupUtp> getGroupsByStudent(Long idStudent) {
-        return groupUtpRepository.findByStudent(idStudent);
+        UserGroup userGroup = userGroupRepository.findByStudent(idStudent)
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return groupUtpRepository.findByStudent(userGroup.getStudent().getId());
     }
 
     private String generateUniqueCode() {

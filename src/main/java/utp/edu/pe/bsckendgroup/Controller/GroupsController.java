@@ -34,9 +34,9 @@ public class GroupsController {
         if (group != null) return new ResponseEntity<>(kanban, HttpStatus.OK);
         return new ResponseEntity<>("Group not found", HttpStatus.BAD_REQUEST);
     }
-    @GetMapping("/list")
-    public ResponseEntity<?> getGroups() {
-        return ResponseEntity.ok(groupsService.getGroups());
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getGroups(@PathVariable Long id) {
+        return ResponseEntity.ok(groupsService.getGroupsByStudent(id));
     }
     @GetMapping("/list/{code}")
     public ResponseEntity<?> getGroupByCode(@PathVariable String code) {

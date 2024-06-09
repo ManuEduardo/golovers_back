@@ -17,6 +17,6 @@ public interface GroupUtpRepository extends JpaRepository<GroupUtp, Long> {
         SELECT g FROM GroupUtp g
             JOIN UserGroup ug ON g.id = ug.groupUtp.id
             WHERE ug.student.id = ?1
-    """)
+        """)
     List<DataListGroupUtp> findByStudent(Long idStudent);
 }

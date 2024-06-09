@@ -2,6 +2,7 @@ package utp.edu.pe.bsckendgroup.Domain.UserGroup;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import utp.edu.pe.bsckendgroup.Domain.GroupUtp.DataListGroupUtp;
 import utp.edu.pe.bsckendgroup.Domain.Student.Student;
 
 import javax.management.relation.Role;
@@ -26,4 +27,11 @@ public interface UserGroupRepository extends JpaRepository<UserGroup, Long> {
 
     @Query("SELECT ug FROM UserGroup ug WHERE ug.student.id = ?1")
     Collection<UserGroup> findByUserId(Long id);
+
+    @Query("""
+        SELECT ug FROM UserGroup ug
+            JOIN GroupUtp g ON ug.groupUtp.id = g.id
+            WHERE ug.student.id = ?1
+        """)
+    List<UserGroup> findByStudent(Long idStudent);
 }

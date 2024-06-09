@@ -23,8 +23,8 @@ public class KanbanController {
     public ResponseEntity<?> getKanban(@PathVariable Long idGroup) {
         return ResponseEntity.ok(kanbanService.getKanban(idGroup));
     }
-    @GetMapping("/participation")
-    public ResponseEntity<?> getParticipation(Long idKanban) {
+    @GetMapping("/participation/{idKanban}")
+    public ResponseEntity<?> getParticipation(@PathVariable Long idKanban) {
         return ResponseEntity.ok(kanbanService.getParticipation(idKanban));
     }
 }
