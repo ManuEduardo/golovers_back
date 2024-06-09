@@ -40,6 +40,6 @@ public class AuthenticationController {
     }
     @PostMapping("/register")
     public ResponseEntity<?> registerStudent(DataRegisterStudent data) {
-        return studentService.save(data);
+        return new ResponseEntity<>(studentService.save(data), HttpStatus.CREATED);
     }
 }
