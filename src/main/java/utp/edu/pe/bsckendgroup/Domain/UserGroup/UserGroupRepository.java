@@ -23,4 +23,7 @@ public interface UserGroupRepository extends JpaRepository<UserGroup, Long> {
 
     @Query("SELECT ug FROM UserGroup ug WHERE ug.student.email = ?1")
     Optional<Student> findByEmail(String username);
+
+    @Query("SELECT ug FROM UserGroup ug WHERE ug.student.id = ?1")
+    Collection<UserGroup> findByUserId(Long id);
 }

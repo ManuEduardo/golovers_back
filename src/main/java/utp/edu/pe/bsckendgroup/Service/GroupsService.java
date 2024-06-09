@@ -140,4 +140,11 @@ public class GroupsService {
                 })
                 .orElse(null);
     }
+
+    public List<DataListGroupUtp> listGroupsByStudent(Long id) {
+        return userGroupRepository.findByUserId(id).stream()
+                .map(userGroup -> groupUtpRepository.findById(userGroup.getGroupUtp().getId()).get())
+                .map(DataListGroupUtp::new)
+                .toList();
+    }
 }

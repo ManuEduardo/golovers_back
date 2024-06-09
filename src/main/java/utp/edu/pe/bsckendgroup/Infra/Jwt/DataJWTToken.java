@@ -1,6 +1,6 @@
 package utp.edu.pe.bsckendgroup.Infra.Jwt;
 
-public record DatosJWTToken(
+public record DataJWTToken(
         String jwTtoken
 ) {
 }

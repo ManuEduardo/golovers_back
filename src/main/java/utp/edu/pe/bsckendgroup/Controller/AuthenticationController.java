@@ -8,14 +8,17 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import utp.edu.pe.bsckendgroup.Domain.Student.DataListStudents;
 import utp.edu.pe.bsckendgroup.Domain.Student.DataRegisterStudent;
 import utp.edu.pe.bsckendgroup.Domain.Student.Student;
+import utp.edu.pe.bsckendgroup.Domain.Student.StudentRepository;
 import utp.edu.pe.bsckendgroup.Infra.Jwt.DataLoginStudent;
-import utp.edu.pe.bsckendgroup.Infra.Jwt.DatosJWTToken;
+import utp.edu.pe.bsckendgroup.Infra.Jwt.DataJWTToken;
 import utp.edu.pe.bsckendgroup.Infra.Jwt.TokenService;
+import utp.edu.pe.bsckendgroup.Service.GroupsService;
 import utp.edu.pe.bsckendgroup.Service.StudentService;
+import utp.edu.pe.bsckendgroup.ServicesDto.DataresponseLogin;
 
 @RestController
 @RequestMapping("/login")
@@ -26,14 +29,28 @@ public class AuthenticationController {
     private TokenService tokenService;
     @Autowired
     private StudentService studentService;
+    @Autowired
+    private StudentRepository studentRepository;
+    @Autowired
+    private GroupsService groupsService;
 
     @PostMapping
     public ResponseEntity<?> autenticarUsuario(@RequestBody @Valid DataLoginStudent datosLogin){
         try {
+            Student student = studentRepository.findByUsername(datosLogin.email())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
             Authentication authToken = new UsernamePasswordAuthenticationToken(datosLogin.email(), datosLogin.password());
             var usuarioAutenticado = authenticationManager.authenticate(authToken);
             var JWTtoken = tokenService.generarToken((Student) usuarioAutenticado.getPrincipal());
-            return ResponseEntity.ok(new DatosJWTToken(JWTtoken));
+
+            DataJWTToken dataJWTToken = new DataJWTToken(JWTtoken);
+
+            DataresponseLogin dataresponseLogin = new DataresponseLogin(
+                    dataJWTToken, new DataListStudents(student),
+                    groupsService.listGroupsByStudent(student.getId()));
+
+            return new ResponseEntity<>(dataresponseLogin, HttpStatus.OK);
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }

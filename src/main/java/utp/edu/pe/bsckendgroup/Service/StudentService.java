@@ -6,6 +6,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import utp.edu.pe.bsckendgroup.Domain.Student.*;
 import utp.edu.pe.bsckendgroup.Infra.Jwt.DataLoginStudent;
+import utp.edu.pe.bsckendgroup.ServicesDto.DataListKanbanAnColumns;
 
 import java.util.List;
 import java.util.Optional;
@@ -56,16 +57,6 @@ public class StudentService {
     public List<DataListStudents> getStudents() {
         List<Student> students = studentRepository.findAll();
         return students.stream().map(DataListStudents::new).toList();
-    }
-
-    public Student login(DataLoginStudent data) {
-        Student student = studentRepository.findByUsername(data.email())
-                .orElseThrow(() -> new RuntimeException("Student not found"));
-        if (student.getPassword().equals(data.password())) {
-            return student;
-        } else {
-            throw new RuntimeException("Invalid password");
-        }
     }
 
     public boolean save(DataRegisterStudent data) {
