@@ -36,8 +36,7 @@ public class GroupsController {
     @PostMapping("/newMember")
     public ResponseEntity<?> joinGroup(@RequestBody @Valid DataNewMemberGroup data) {
         DataListGroupUtp group = groupsService.joinGroup(data);
-        DataListKanbanAnColumns kanban = kanbanService.getKanban(group.id());
-        if (group != null) return new ResponseEntity<>(kanban, HttpStatus.OK);
+        if (group != null) return new ResponseEntity<>(HttpStatus.OK);
         return new ResponseEntity<>("Group not found", HttpStatus.BAD_REQUEST);
     }
 

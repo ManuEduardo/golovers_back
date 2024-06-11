@@ -61,7 +61,7 @@ public class AuthenticationController {
     }
     @Operation(summary = "Registrar usuario", description = "Registrar usuario")
     @PostMapping("/register")
-    public ResponseEntity<?> registerStudent(DataRegisterStudent data) {
+    public ResponseEntity<?> registerStudent(@RequestBody @Valid DataRegisterStudent data) {
         return new ResponseEntity<>(studentService.save(data), HttpStatus.CREATED);
     }
 }

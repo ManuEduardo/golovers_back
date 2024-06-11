@@ -78,21 +78,24 @@ public class GroupsService {
         Student student = studentRepository.findById(data.idStudent())
                 .orElseThrow(() -> new RuntimeException("Student not found"));
 
-        Optional<GroupUtp> groupUtp = groupUtpRepository.findByCode(data.code().toLowerCase());
-        if (groupUtp.isEmpty()) {
-            new RuntimeException("Group not found");
-        }
-        if (userGroupRepository.findByUserIdAndGroupId(groupUtp.get().getId()).isEmpty()) {
+        GroupUtp groupUtp = groupUtpRepository.findByCode(data.code().toLowerCase())
+                .orElseThrow(() -> new RuntimeException("Group not found"));
+
+        boolean exists = userGroupRepository.existsStudentInGroup(student, groupUtp);
+
+        if (!exists) {
             DataRegisterUserGroup userGroup = new DataRegisterUserGroup(
                     student.getId(),
-                    groupUtp.get().getId(),
+                    groupUtp.getId(),
                     2L
             );
             userGroupRepository.save(new UserGroup(userGroup));
-            return new DataListGroupUtp(groupUtp.get());
+            return new DataListGroupUtp(groupUtp);
         }
-        return null;
+
+        throw new RuntimeException("Student already in group");
     }
+
 
     public List<DataListGroupUtp> getGroupsByStudent(Long idStudent) {
         UserGroup userGroup = userGroupRepository.findByStudent(idStudent)
