@@ -1,5 +1,7 @@
 package utp.edu.pe.bsckendgroup.Controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -9,21 +11,25 @@ import utp.edu.pe.bsckendgroup.Service.NoticeService;
 
 @RestController
 @RequestMapping("/notice")
+@Tag(name = "Notice", description = "Notice")
 public class NoticeController {
     @Autowired
     private NoticeService noticeService;
 
+    @Operation(summary = "Create notice", description = "Create notice")
     @PostMapping("/create")
     public ResponseEntity<?>  createNotice(@RequestBody @Valid DataRegisterNotice notice) {
         noticeService.createNotice(notice);
         return ResponseEntity.ok().build();
     }
 
+    @Operation  (summary = "Get notices", description = "Get notices")
     @GetMapping("/group/{groupId}")
     public ResponseEntity<?> getNotices(@PathVariable Long groupId) {
         return ResponseEntity.ok(noticeService.getNotices(groupId));
     }
 
+    @Operation(summary = "Get notices by student", description = "Get notices by student")
     @PostMapping("/student/{id}")
     public ResponseEntity<?> getNoticesByStudent(@PathVariable Long id) {
         return ResponseEntity.ok(noticeService.getNoticesByStudent(id));

@@ -1,5 +1,7 @@
 package utp.edu.pe.bsckendgroup.Controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,6 +24,7 @@ import utp.edu.pe.bsckendgroup.ServicesDto.DataresponseLogin;
 
 @RestController
 @RequestMapping("/login")
+@Tag(name = "Authentication", description = "Autenticación de usuario")
 public class AuthenticationController {
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -34,6 +37,7 @@ public class AuthenticationController {
     @Autowired
     private GroupsService groupsService;
 
+    @Operation(summary = "Autenticar usuario", description = "Autenticar usuario")
     @PostMapping
     public ResponseEntity<?> autenticarUsuario(@RequestBody @Valid DataLoginStudent datosLogin){
         try {
@@ -55,6 +59,7 @@ public class AuthenticationController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
+    @Operation(summary = "Registrar usuario", description = "Registrar usuario")
     @PostMapping("/register")
     public ResponseEntity<?> registerStudent(DataRegisterStudent data) {
         return new ResponseEntity<>(studentService.save(data), HttpStatus.CREATED);
