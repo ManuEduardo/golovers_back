@@ -6,8 +6,8 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import utp.edu.pe.bsckendgroup.Domain.GroupUtp.DataAddStudent;
 import utp.edu.pe.bsckendgroup.Domain.GroupUtp.DataListGroupUtp;
 import utp.edu.pe.bsckendgroup.Domain.GroupUtp.DataNewMemberGroup;
 import utp.edu.pe.bsckendgroup.Domain.GroupUtp.DataRegisterGroupUtp;
@@ -57,5 +57,11 @@ public class GroupsController {
     @GetMapping("/students/{id}")
     public ResponseEntity<?> getStudentsByGroup(@PathVariable Long id) {
         return ResponseEntity.ok(groupsService.getStudentsByGroup(id));
+    }
+
+    @Operation(summary = "add student", description = "add student with group id")
+    @PostMapping("/addStudent")
+    public ResponseEntity<?> joinGroupById(@RequestBody @Valid DataAddStudent data) {
+        return ResponseEntity.ok(groupsService.addStudentWithGroup(data));
     }
 }

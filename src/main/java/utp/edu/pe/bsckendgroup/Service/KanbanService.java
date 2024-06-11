@@ -12,10 +12,12 @@ import utp.edu.pe.bsckendgroup.Domain.Kanban.KanbanRepository;
 import utp.edu.pe.bsckendgroup.Domain.Student.StudentRepository;
 import utp.edu.pe.bsckendgroup.Domain.Task.DataListTask;
 import utp.edu.pe.bsckendgroup.Domain.Task.DataParticipationStudent;
+import utp.edu.pe.bsckendgroup.Domain.Task.Task;
 import utp.edu.pe.bsckendgroup.Domain.Task.TaskRepository;
 import utp.edu.pe.bsckendgroup.ServicesDto.ColumsKanban;
 import utp.edu.pe.bsckendgroup.ServicesDto.DataListKanbanAnColumns;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -41,17 +43,27 @@ public class KanbanService {
     }
 
     public DataListKanbanAnColumns getKanban(Long idGroup) {
-        Optional<Kanban> kanbans = Optional.ofNullable(kanbanRepository.findByGroupId(idGroup)
-                .orElseThrow(() -> new RuntimeException("Kanban not found")));
-        DataListKanban kanban = new DataListKanban(kanbans.get().getId(), kanbans.get().getGroupUtp().getId(), kanbans.get().getName());
-        List<ColumnKanban> columns = columnKanbanRepository.findByKanbanId(kanbans.get().getId());
+        Kanban kanban = kanbanRepository.findByGroupId(idGroup)
+                .orElseThrow(() -> new RuntimeException("Kanban not found"));
+        DataListKanban dataListKanban = new DataListKanban(kanban.getId(), kanban.getGroupUtp().getId(), kanban.getName());
 
-        List<DataListTask> tasks = taskRepository.findByKanbanId(kanbans.get().getId());
-        List<ColumsKanban> columnsList = columns.stream()
-                .map(column -> new ColumsKanban(column.getId(), column.getKanban().getId(), column.getTypeColumn().getId(),
-                        column.getColor(), column.getTitle(), column.getOrderColum(), tasks)).toList();
-        return new DataListKanbanAnColumns(kanban, columnsList);
+        List<ColumnKanban> columns = columnKanbanRepository.findByKanbanId(kanban.getId());
+
+        List<ColumsKanban> columnKanbans = new ArrayList<>();
+        for (ColumnKanban column : columns) {
+            column = columnKanbanRepository.findById(column.getId())
+                    .orElseThrow(() -> new RuntimeException("Column not found"));
+            List<Task> dataListTask = taskRepository.findByColumnKanbanId(column.getId());
+            columnKanbans.add(new ColumsKanban(
+                    column.getId(), column.getKanban().getId(), column.getTypeColumn().getId(),
+                    column.getColor(), column.getTitle(), column.getOrderColum(),
+                    dataListTask.stream().map(DataListTask::new).collect(Collectors.toList())
+            ));
+        }
+
+        return new DataListKanbanAnColumns(dataListKanban, columnKanbans);
     }
+
 
     public List<DataParticipationStudent> getParticipation(Long idKanban) {
         Kanban kanban = kanbanRepository.findById(idKanban)

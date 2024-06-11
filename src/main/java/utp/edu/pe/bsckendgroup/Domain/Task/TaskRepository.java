@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface TaskRepository extends JpaRepository<Task, Long> {
     @Query(value = """
@@ -17,5 +18,8 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     List<DataParticipationStudent> getPartisipation(Long idKanban);
 
     @Query("SELECT t FROM Task t WHERE t.kanban.id = ?1")
-    List<DataListTask> findByKanbanId(Long id);
+    List<Task> findByKanbanId(Long id);
+
+    @Query("SELECT t FROM Task t WHERE t.columKanban.id = ?1")
+    List<Task> findByColumnKanbanId(Long columnKanbanId);
 }

@@ -1,6 +1,7 @@
 package utp.edu.pe.bsckendgroup.ServicesDto;
 
 import utp.edu.pe.bsckendgroup.Domain.Kanban.DataListKanban;
+import utp.edu.pe.bsckendgroup.Domain.Kanban.Kanban;
 
 import java.util.List;
 

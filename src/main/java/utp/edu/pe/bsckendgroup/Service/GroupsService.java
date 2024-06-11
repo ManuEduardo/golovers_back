@@ -16,6 +16,7 @@ import utp.edu.pe.bsckendgroup.Domain.TypeColumn.TypeColumnRepository;
 import utp.edu.pe.bsckendgroup.Domain.UserGroup.DataRegisterUserGroup;
 import utp.edu.pe.bsckendgroup.Domain.UserGroup.UserGroup;
 import utp.edu.pe.bsckendgroup.Domain.UserGroup.UserGroupRepository;
+import utp.edu.pe.bsckendgroup.ServicesDto.DataListKanbanAnColumns;
 
 import java.util.*;
 
@@ -121,6 +122,49 @@ public class GroupsService {
         return code;
     }
 
+
+    public List<DataListGroupUtp> listGroupsByStudent(Long id) {
+        return userGroupRepository.findByUserId(id).stream()
+                .map(userGroup -> groupUtpRepository.findById(userGroup.getGroupUtp().getId()).get())
+                .map(DataListGroupUtp::new)
+                .toList();
+    }
+
+    public List<DataListStudents> getStudentsByGroup(Long id) {
+        List<DataListStudents> studentsList = new ArrayList<>();
+        return groupUtpRepository.findById(id)
+                .map(groupUtp -> {
+                    List<UserGroup> userGroups = userGroupRepository.findByGroupId(id);
+                    List<Student> students = userGroups.stream()
+                            .map(UserGroup::getStudent)
+                            .toList();
+                    studentsList.addAll(students.stream().map(DataListStudents::new).toList());
+                    return studentsList;
+                })
+                .orElseThrow(() -> new RuntimeException("Group not found"));
+    }
+
+    public DataListGroupUtp addStudentWithGroup(DataAddStudent data) {
+        Optional<Student> student = Optional.ofNullable(studentRepository.findById(data.idStudent())
+                .orElseThrow(() -> new RuntimeException("Student not found")));
+        GroupUtp groupUtp = groupUtpRepository.findById(data.idGroup())
+                .orElseThrow(() -> new RuntimeException("Group not found"));
+
+        if (userGroupRepository.existsStudentInGroup(student.get(), groupUtp)) {
+            return null;
+        }
+        if (userGroupRepository.findByUserIdAndGroupId(student.get().getId(), groupUtp.getId()).isEmpty()) {
+            DataRegisterUserGroup userGroup = new DataRegisterUserGroup(
+                    student.get().getId(),
+                    groupUtp.getId(),
+                    2L
+            );
+            userGroupRepository.save(new UserGroup(userGroup));
+            return new DataListGroupUtp(groupUtp);
+        }
+        return null;
+    }
+
     private boolean createColumnsKanban(Long idGroup) {
         return kanbanRepository.findById(idGroup)
                 .map(kanban -> {
@@ -146,24 +190,4 @@ public class GroupsService {
                 .orElse(null);
     }
 
-    public List<DataListGroupUtp> listGroupsByStudent(Long id) {
-        return userGroupRepository.findByUserId(id).stream()
-                .map(userGroup -> groupUtpRepository.findById(userGroup.getGroupUtp().getId()).get())
-                .map(DataListGroupUtp::new)
-                .toList();
-    }
-
-    public List<DataListStudents> getStudentsByGroup(Long id) {
-        List<DataListStudents> studentsList = new ArrayList<>();
-        return groupUtpRepository.findById(id)
-                .map(groupUtp -> {
-                    List<UserGroup> userGroups = userGroupRepository.findByGroupId(id);
-                    List<Student> students = userGroups.stream()
-                            .map(UserGroup::getStudent)
-                            .toList();
-                    studentsList.addAll(students.stream().map(DataListStudents::new).toList());
-                    return studentsList;
-                })
-                .orElseThrow(() -> new RuntimeException("Group not found"));
-    }
 }

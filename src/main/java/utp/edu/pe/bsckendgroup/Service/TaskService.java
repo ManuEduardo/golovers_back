@@ -55,7 +55,7 @@ public class TaskService {
     }
 
     public List<DataListTask> findByKanbanId(Long id){
-        return taskRepository.findByKanbanId(id);
+        return taskRepository.findByKanbanId(id).stream().map(DataListTask::new).toList();
     }
 
     public List<DataParticipationStudent> fisnishTask(DataFinishTask data){

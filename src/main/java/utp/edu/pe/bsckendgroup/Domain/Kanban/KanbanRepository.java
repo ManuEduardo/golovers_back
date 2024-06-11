@@ -24,4 +24,7 @@ public interface KanbanRepository extends JpaRepository<Kanban, Long>{
 
     @Query("SELECT k FROM Kanban k WHERE k.groupUtp.id = ?1")
     Optional<Kanban> findByGroupId(Long idGroup);
+
+    @Query("SELECT k FROM Kanban k WHERE k.groupUtp.id = ?1")
+    Kanban findByGroupUtpId(Long id);
 }
