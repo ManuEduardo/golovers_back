@@ -34,4 +34,11 @@ public interface UserGroupRepository extends JpaRepository<UserGroup, Long> {
             WHERE ug.student.id = ?1
         """)
     List<UserGroup> findByStudent(Long idStudent);
+
+    @Query("""
+        SELECT ug FROM UserGroup ug
+            JOIN GroupUtp g ON ug.groupUtp.id = g.id
+            WHERE g.id = ?1
+        """)
+    List<UserGroup> findByGroupId(Long id);
 }

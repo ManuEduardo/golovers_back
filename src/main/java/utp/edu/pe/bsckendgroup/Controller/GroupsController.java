@@ -42,4 +42,8 @@ public class GroupsController {
     public ResponseEntity<?> getGroupByCode(@PathVariable String code) {
         return ResponseEntity.ok(groupsService.getGroupByCode(code));
     }
+    @GetMapping("/students/{id}")
+    public ResponseEntity<?> getStudentsByGroup(@PathVariable Long id) {
+        return ResponseEntity.ok(groupsService.getStudentsByGroup(id));
+    }
 }

@@ -7,6 +7,6 @@ public record DataUpdateNotice(
         Long studentId,
         Long groupId,
         String message,
-        String dateTime
+        String affair
 ) {
 }

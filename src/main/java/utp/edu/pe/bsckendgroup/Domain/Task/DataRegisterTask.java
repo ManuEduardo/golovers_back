@@ -10,10 +10,7 @@ public record DataRegisterTask(
         @NotNull String name,
         @NotNull String description,
         @NotNull Long assignedUserId,
-        @NotNull LocalDateTime date,
         @NotNull Integer priority,
-        @NotNull LocalDateTime lastUpdated,
-        Long finishUserId,
-         LocalDateTime limitTime
+        Long finishUserId
 ) {
 }

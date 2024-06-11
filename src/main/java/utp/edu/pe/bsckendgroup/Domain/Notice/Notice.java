@@ -33,13 +33,16 @@ public class Notice {
     @Column(nullable = false, name = "date_time")
     private LocalDateTime dateTime;
 
+    private String affair;
+
     public Notice(DataRegisterNotice data){
         this(
                 null,
                 new Student(data.studentId()),
                 new GroupUtp(data.groupId()),
                 data.message(),
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                data.affair()
         );
     }
     public Notice(DataUpdateNotice data){
@@ -47,6 +50,6 @@ public class Notice {
         if(data.studentId() != null) this.student = new Student(data.studentId());
         if(data.groupId() != null) this.groupUtp = new GroupUtp(data.groupId());
         if(data.message() != null) this.message = data.message();
-        if(data.dateTime() != null) this.dateTime = LocalDateTime.parse(data.dateTime());
+        if(data.affair() != null) this.affair = data.affair();
     }
 }

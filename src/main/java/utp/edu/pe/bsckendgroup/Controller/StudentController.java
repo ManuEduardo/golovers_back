@@ -18,15 +18,15 @@ public class StudentController {
     public ResponseEntity<?> registerStudent(@RequestBody @Valid DataRegisterStudent student) {
         return ResponseEntity.ok(studentService.registerStudent(student));
     }
-    @PostMapping("/getByEmail/{email}")
+    @GetMapping("/getByEmail/{email}")
     public ResponseEntity<?> getStudentByEmail(@PathVariable String email) {
         return ResponseEntity.ok(studentService.getStudentByEmail(email));
     }
-    @PostMapping("/getById/{id}")
+    @GetMapping("/getById/{id}")
     public ResponseEntity<?> getStudentById(@PathVariable Long id) {
         return ResponseEntity.ok(studentService.getStudentById(id));
     }
-    @PostMapping("/delete/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteStudent(@PathVariable Long id) {
         return ResponseEntity.ok(studentService.deleteStudent(id));
     }

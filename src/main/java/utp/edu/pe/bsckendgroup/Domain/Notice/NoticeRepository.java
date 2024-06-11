@@ -8,4 +8,7 @@ import java.util.List;
 public interface NoticeRepository extends JpaRepository<Notice, Long> {
     @Query("SELECT n FROM Notice n WHERE n.groupUtp.id = ?1")
     List<Notice> findByGroupId(Long groupId);
+
+    @Query("SELECT n FROM Notice n WHERE n.student.id = ?1")
+    List<Notice> findByStudentId(Long id);
 }

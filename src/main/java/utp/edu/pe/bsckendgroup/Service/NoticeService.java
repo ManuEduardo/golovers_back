@@ -33,4 +33,9 @@ public class NoticeService {
     public List<DataListNotice> getNotices(Long groupId) {
         return noticeRepository.findByGroupId(groupId).stream().map(DataListNotice::new).toList();
     }
+
+    public List<DataListNotice> getNoticesByStudent(Long id) {
+        List<Notice> notices = noticeRepository.findByStudentId(id);
+        return notices.stream().map(DataListNotice::new).toList();
+    }
 }

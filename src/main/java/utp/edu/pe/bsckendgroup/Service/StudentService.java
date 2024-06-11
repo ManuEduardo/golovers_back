@@ -27,14 +27,16 @@ public class StudentService {
         return true;
     }
 
-    public Student getStudentByEmail(String email) {
-        return studentRepository.findByUsername(email)
+    public DataListStudents getStudentByEmail(String email) {
+        Student student = studentRepository.findByUsername(email)
                 .orElseThrow(() -> new RuntimeException("Student not found"));
+        return new DataListStudents(student);
     }
 
-    public Student getStudentById(Long id) {
-        return studentRepository.findById(id)
+    public DataListStudents getStudentById(Long id) {
+        Student student = studentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Student not found"));
+        return new DataListStudents(student);
     }
 
     public boolean deleteStudent(Long id) {

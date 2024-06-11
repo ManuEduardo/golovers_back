@@ -19,8 +19,13 @@ public class NoticeController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/list/{groupId}")
+    @GetMapping("/group/{groupId}")
     public ResponseEntity<?> getNotices(@PathVariable Long groupId) {
         return ResponseEntity.ok(noticeService.getNotices(groupId));
+    }
+
+    @PostMapping("/student/{id}")
+    public ResponseEntity<?> getNoticesByStudent(@PathVariable Long id) {
+        return ResponseEntity.ok(noticeService.getNoticesByStudent(id));
     }
 }

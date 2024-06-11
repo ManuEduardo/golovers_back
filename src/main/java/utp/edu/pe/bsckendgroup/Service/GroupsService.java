@@ -8,6 +8,7 @@ import utp.edu.pe.bsckendgroup.Domain.ColumnKanban.DataRegisterColumnKanban;
 import utp.edu.pe.bsckendgroup.Domain.GroupUtp.*;
 import utp.edu.pe.bsckendgroup.Domain.Kanban.Kanban;
 import utp.edu.pe.bsckendgroup.Domain.Kanban.KanbanRepository;
+import utp.edu.pe.bsckendgroup.Domain.Student.DataListStudents;
 import utp.edu.pe.bsckendgroup.Domain.Student.Student;
 import utp.edu.pe.bsckendgroup.Domain.Student.StudentRepository;
 import utp.edu.pe.bsckendgroup.Domain.TypeColumn.TypeColumn;
@@ -150,5 +151,19 @@ public class GroupsService {
                 .map(userGroup -> groupUtpRepository.findById(userGroup.getGroupUtp().getId()).get())
                 .map(DataListGroupUtp::new)
                 .toList();
+    }
+
+    public List<DataListStudents> getStudentsByGroup(Long id) {
+        List<DataListStudents> studentsList = new ArrayList<>();
+        return groupUtpRepository.findById(id)
+                .map(groupUtp -> {
+                    List<UserGroup> userGroups = userGroupRepository.findByGroupId(id);
+                    List<Student> students = userGroups.stream()
+                            .map(UserGroup::getStudent)
+                            .toList();
+                    studentsList.addAll(students.stream().map(DataListStudents::new).toList());
+                    return studentsList;
+                })
+                .orElseThrow(() -> new RuntimeException("Group not found"));
     }
 }

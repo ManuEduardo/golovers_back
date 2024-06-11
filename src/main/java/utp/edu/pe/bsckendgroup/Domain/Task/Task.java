@@ -61,24 +61,23 @@ public class Task {
                 data.name(),
                 data.description(),
                 new Student(data.assignedUserId()),
-                data.date(),
+                LocalDateTime.now(),
                 data.priority(),
-                data.lastUpdated(),
+                LocalDateTime.now(),
                 new Student(data.finishUserId()),
-                data.limitTime()
+                LocalDateTime.now()
         );
     }
     public Task(DataUpdateTask data) {
         this.id = data.id();
         if (data.columnKanbanId() != null) this.columKanban = new ColumnKanban(data.columnKanbanId());
-        if (data.kanbanId() != null) this.kanban = new Kanban(data.kanbanId());
-        if (data.name() != null) this.name = data.name();
-        if (data.description() != null) this.description = data.description();
-        if (data.assignedUserId() != null) this.assignedUser = new Student(data.assignedUserId());
-        if (data.date() != null) this.date = data.date();
-        if (data.priority() != null) this.priority = data.priority();
-        if (data.lastUpdated() != null) this.lastUpdated = data.lastUpdated();
-        if (data.finishUserId() != null) this.finishStudent = new Student(data.finishUserId());
-        if (data.limitTime() != null) this.limitTime = data.limitTime();
+        this.lastUpdated = LocalDateTime.now();
+    }
+
+    public Task(DataFinishTask data) {
+        this.id = data.id();
+        this.columKanban = new ColumnKanban(data.columnKanbanId());
+        this.finishStudent = new Student(data.finishUserId());
+        this.lastUpdated = LocalDateTime.now();
     }
 }

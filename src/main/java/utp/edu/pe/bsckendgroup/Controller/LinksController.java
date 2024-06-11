@@ -1,5 +1,6 @@
 package utp.edu.pe.bsckendgroup.Controller;
 
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,8 @@ public class LinksController {
     public ResponseEntity<?> listLinksGroup(@PathVariable Long groupId){
         return ResponseEntity.ok(linksService.listLinksGroup(groupId));
     }
+
+    @Transactional
     @PutMapping("/updateLink")
     public ResponseEntity<?> updateLink(@RequestBody @Valid DataUpdateLink data){
         return ResponseEntity.ok(linksService.updateLink(data));
