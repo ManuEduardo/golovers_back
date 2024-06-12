@@ -28,9 +28,9 @@ public class KanbanController {
     }
 
     @Operation(summary = "Get kanban", description = "Get kanban")
-    @GetMapping("/list/{idGroup}")
-    public ResponseEntity<?> getKanban(@PathVariable Long idGroup) {
-        return ResponseEntity.ok(kanbanService.getKanban(idGroup));
+    @GetMapping("/list/{kanbanId}")
+    public ResponseEntity<?> getKanban(@PathVariable Long kanbanId) {
+        return ResponseEntity.ok(kanbanService.getKanban(kanbanId));
     }
 
     @Operation(summary = "Get participation", description = "Get participation")

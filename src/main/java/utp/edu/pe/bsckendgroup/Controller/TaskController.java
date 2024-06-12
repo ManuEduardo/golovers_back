@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import utp.edu.pe.bsckendgroup.Domain.Task.DataFinishTask;
-import utp.edu.pe.bsckendgroup.Domain.Task.DataListTask;
 import utp.edu.pe.bsckendgroup.Domain.Task.DataRegisterTask;
 import utp.edu.pe.bsckendgroup.Domain.Task.DataUpdateTask;
 import utp.edu.pe.bsckendgroup.Service.TaskService;
@@ -24,14 +23,14 @@ public class TaskController {
 
     @Operation(summary = "Create task", description = "Create task")
     @PostMapping("/create")
-    public DataListTask create(@RequestBody @Valid DataRegisterTask data){
-        return taskService.create(data);
+    public ResponseEntity<?> create(@RequestBody @Valid DataRegisterTask data){
+        return new ResponseEntity<>(taskService.create(data), HttpStatus.CREATED);
     }
 
     @Operation(summary = "Find all tasks", description = "Find all tasks")
     @GetMapping("/find/{id}")
-    public DataListTask findById(@PathVariable Long id){
-        return taskService.findById(id);
+    public ResponseEntity<?> findById(@PathVariable Long id){
+        return new ResponseEntity<>(taskService.findById(id), HttpStatus.OK);
     }
 
     @Operation(summary = "Find all tasks", description = "Find all tasks")
@@ -48,8 +47,8 @@ public class TaskController {
     )
     @Transactional
     @PutMapping("/update")
-    public DataListTask update(@RequestBody @Valid DataUpdateTask data){
-        return taskService.update(data);
+    public ResponseEntity update(@RequestBody @Valid DataUpdateTask data){
+        return new ResponseEntity<>(taskService.update(data), HttpStatus.OK);
     }
 
     @Operation(summary = "Finish task", description = "Finish task")

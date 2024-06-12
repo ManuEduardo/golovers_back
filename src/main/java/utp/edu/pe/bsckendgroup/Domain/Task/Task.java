@@ -56,7 +56,7 @@ public class Task {
     public Task(DataRegisterTask data) {
         this(
                 null,
-                new ColumnKanban(data.columnKanbanId()),
+                null,
                 new Kanban(data.kanbanId()),
                 data.name(),
                 data.description(),

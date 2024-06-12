@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import utp.edu.pe.bsckendgroup.Domain.ColumnKanban.ColumnKanban;
 import utp.edu.pe.bsckendgroup.Domain.ColumnKanban.ColumnKanbanRepository;
+import utp.edu.pe.bsckendgroup.Domain.GroupUtp.GroupUtp;
+import utp.edu.pe.bsckendgroup.Domain.GroupUtp.GroupUtpRepository;
 import utp.edu.pe.bsckendgroup.Domain.Kanban.Kanban;
 import utp.edu.pe.bsckendgroup.Domain.Kanban.KanbanRepository;
 import utp.edu.pe.bsckendgroup.Domain.Student.Student;
@@ -22,15 +24,22 @@ public class TaskService {
     private ColumnKanbanRepository columnKanbanRepository;
     @Autowired
     private KanbanRepository kanbanRepository;
+    @Autowired
+    private GroupUtpRepository groupUtpRepository;
 
-    public DataListTask create(DataRegisterTask data){
-        ColumnKanban columnKanban = columnKanbanRepository.findById(data.columnKanbanId())
-                .orElseThrow(() -> new RuntimeException("Column not found"));
+    public DataListTask create(DataRegisterTask data) {
+
         Kanban kanban = kanbanRepository.findById(data.kanbanId())
                 .orElseThrow(() -> new RuntimeException("Kanban not found"));
+        ColumnKanban firstColumnKanban = columnKanbanRepository.findPrimaryColumn(kanban.getId())
+                .orElseThrow(() -> new RuntimeException("Primary Column not found"));
+
         Student assignedUser = studentRepository.findById(data.assignedUserId())
                 .orElseThrow(() -> new RuntimeException("Student not found"));
-        return new DataListTask(taskRepository.save(new Task(data)));
+        Task task = new Task(data);
+        task.setColumKanban(firstColumnKanban);
+        task.setAssignedUser(assignedUser);
+        return new DataListTask(taskRepository.save(task));
     }
 
     public DataListTask update(DataUpdateTask data){

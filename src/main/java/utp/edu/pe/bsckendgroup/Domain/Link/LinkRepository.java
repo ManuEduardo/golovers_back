@@ -6,8 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface LinkRepository extends JpaRepository<Link, Long> {
-    @Query("SELECT l FROM Link l WHERE l.groupUtp.id = ?1")
-    List<Link> findByGroup(Long groupId);
+
     @Query("SELECT l FROM Link l WHERE l.groupUtp.id = ?1")
     List<Link> findByGroupUtpId(Long groupId);
 }

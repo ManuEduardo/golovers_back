@@ -19,12 +19,7 @@ public interface KanbanRepository extends JpaRepository<Kanban, Long>{
         """)
     List<DataListKanban> findFiveKanban(Long idGroup);
 
-    @Query("SELECT k FROM Kanban k WHERE k.name = ?1")
-    Kanban findByName(String name);
-
     @Query("SELECT k FROM Kanban k WHERE k.groupUtp.id = ?1")
     Optional<Kanban> findByGroupId(Long idGroup);
 
-    @Query("SELECT k FROM Kanban k WHERE k.groupUtp.id = ?1")
-    Kanban findByGroupUtpId(Long id);
 }
