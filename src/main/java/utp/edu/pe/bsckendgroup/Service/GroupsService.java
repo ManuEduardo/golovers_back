@@ -1,6 +1,7 @@
 package utp.edu.pe.bsckendgroup.Service;
 
 import jakarta.transaction.Transactional;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import utp.edu.pe.bsckendgroup.Domain.ColumnKanban.ColumnKanban;
@@ -40,7 +41,7 @@ public class GroupsService {
     private RoleRepository roleRepository;
 
     @Transactional
-    public DataListGroupUtp createGroup(DataRegisterGroupUtp group) {
+    public DataListGroupUtp createGroup(@NotNull DataRegisterGroupUtp group) {
         Student student = studentRepository.findById(group.studentId())
                 .orElseThrow(() -> new RuntimeException("Student not found"));
 
@@ -75,7 +76,7 @@ public class GroupsService {
         return new DataListGroupUtp(groupUtp);
     }
 
-    public DataListGroupUtp joinGroup(DataNewMemberGroup data) {
+    public DataListGroupUtp joinGroup(@NotNull DataNewMemberGroup data) {
         Student student = studentRepository.findById(data.idStudent())
                 .orElseThrow(() -> new RuntimeException("Student not found"));
 
@@ -126,7 +127,7 @@ public class GroupsService {
                 .orElseThrow(() -> new RuntimeException("Group not found"));
     }
 
-    public DataListGroupUtp addStudentWithGroup(DataAddStudent data) {
+    public DataListGroupUtp addStudentWithGroup(@NotNull DataAddStudent data) {
         Optional<Student> student = Optional.ofNullable(studentRepository.findById(data.idStudent())
                 .orElseThrow(() -> new RuntimeException("Student not found")));
         GroupUtp groupUtp = groupUtpRepository.findById(data.idGroup())
