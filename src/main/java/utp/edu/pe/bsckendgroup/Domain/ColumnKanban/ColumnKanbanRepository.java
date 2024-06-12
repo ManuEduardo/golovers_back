@@ -12,4 +12,7 @@ public interface ColumnKanbanRepository extends JpaRepository<ColumnKanban, Long
 
     @Query("SELECT c FROM ColumnKanban c WHERE c.kanban.id = ?1 AND c.typeColumn.name = 'Start'")
     Optional<ColumnKanban> findPrimaryColumn(Long aLong);
+
+    @Query("SELECT c FROM ColumnKanban c WHERE c.kanban.id = ?1 AND c.orderColum = ?2")
+    Optional<ColumnKanban> findByIdOrder(Long id, Long aLong);
 }

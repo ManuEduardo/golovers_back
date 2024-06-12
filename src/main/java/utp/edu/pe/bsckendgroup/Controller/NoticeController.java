@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import utp.edu.pe.bsckendgroup.Domain.Notice.DataRegisterNotice;
@@ -19,10 +20,9 @@ public class NoticeController {
     @Operation(summary = "Create notice", description = "Create notice")
     @PostMapping("/create")
     public ResponseEntity<?>  createNotice(@RequestBody @Valid DataRegisterNotice notice) {
-        noticeService.createNotice(notice);
-        return ResponseEntity.ok().build();
+        if (noticeService.createNotice(notice)) return new ResponseEntity<>("Create notice exit", HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
-
     @Operation  (summary = "Get notices", description = "Get notices")
     @GetMapping("/group/{groupId}")
     public ResponseEntity<?> getNotices(@PathVariable Long groupId) {

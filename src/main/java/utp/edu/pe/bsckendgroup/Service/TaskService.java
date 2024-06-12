@@ -1,11 +1,10 @@
 package utp.edu.pe.bsckendgroup.Service;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import utp.edu.pe.bsckendgroup.Domain.ColumnKanban.ColumnKanban;
 import utp.edu.pe.bsckendgroup.Domain.ColumnKanban.ColumnKanbanRepository;
-import utp.edu.pe.bsckendgroup.Domain.GroupUtp.GroupUtp;
-import utp.edu.pe.bsckendgroup.Domain.GroupUtp.GroupUtpRepository;
 import utp.edu.pe.bsckendgroup.Domain.Kanban.Kanban;
 import utp.edu.pe.bsckendgroup.Domain.Kanban.KanbanRepository;
 import utp.edu.pe.bsckendgroup.Domain.Student.Student;
@@ -24,8 +23,6 @@ public class TaskService {
     private ColumnKanbanRepository columnKanbanRepository;
     @Autowired
     private KanbanRepository kanbanRepository;
-    @Autowired
-    private GroupUtpRepository groupUtpRepository;
 
     public DataListTask create(DataRegisterTask data) {
 
@@ -42,10 +39,10 @@ public class TaskService {
         return new DataListTask(taskRepository.save(task));
     }
 
-    public DataListTask update(DataUpdateTask data){
+    public DataListTask update(@NotNull DataUpdateTask data){
         Task task = taskRepository.findById(data.id())
                     .orElseThrow(() -> new RuntimeException("Task not found"));
-        ColumnKanban columnKanban = columnKanbanRepository.findById(data.columnKanbanId())
+        ColumnKanban columnKanban = columnKanbanRepository.findByIdOrder(task.getKanban().getId(), data.oderColumn())
                 .orElseThrow(() -> new RuntimeException("Column not found"));
         task.setColumKanban(columnKanban);
         return new DataListTask(taskRepository.save(task));
