@@ -1,5 +1,7 @@
 package utp.edu.pe.bsckendgroup.Service;
 
+import jakarta.transaction.Transactional;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import utp.edu.pe.bsckendgroup.Domain.GroupUtp.GroupUtp;
@@ -22,12 +24,14 @@ public class NoticeService {
     @Autowired
     private GroupUtpRepository groupUtpRepository;
 
-    public void createNotice(DataRegisterNotice notice) {
+    @Transactional
+    public Boolean createNotice(@NotNull DataRegisterNotice notice) {
         Student student = studentRepository.findById(notice.studentId())
                 .orElseThrow(() -> new RuntimeException("Student not found"));
         GroupUtp group = groupUtpRepository.findById(notice.groupId())
                 .orElseThrow(() -> new RuntimeException("Group not found"));
         noticeRepository.save(new Notice(notice));
+        return true;
     }
 
     public List<DataListNotice> getNotices(Long groupId) {

@@ -33,6 +33,7 @@ public class Notice {
     @Column(nullable = false, name = "date_time")
     private LocalDateTime dateTime;
 
+    @Column(nullable = false)
     private String affair;
 
     public Notice(DataRegisterNotice data){

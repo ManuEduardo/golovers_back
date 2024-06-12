@@ -70,7 +70,7 @@ public class Task {
     }
     public Task(DataUpdateTask data) {
         this.id = data.id();
-        if (data.columnKanbanId() != null) this.columKanban = new ColumnKanban(data.columnKanbanId());
+        if (data.oderColumn() != null) this.columKanban = new ColumnKanban(data.oderColumn());
         this.lastUpdated = LocalDateTime.now();
     }
 
