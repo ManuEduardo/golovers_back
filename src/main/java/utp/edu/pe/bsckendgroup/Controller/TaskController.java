@@ -55,7 +55,7 @@ public class TaskController {
     @Transactional
     @PutMapping("/finish")
     public ResponseEntity<?> finish(@RequestBody @Valid DataFinishTask data){
-        return new ResponseEntity<>(taskService.fisnishTask(data), HttpStatus.OK);
+        return new ResponseEntity<>(taskService.finishTask(data), HttpStatus.OK);
     }
 
     @Operation(summary = "Delete task", description = "Delete task")

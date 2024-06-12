@@ -63,9 +63,9 @@ public class Task {
                 new Student(data.assignedUserId()),
                 LocalDateTime.now(),
                 data.priority(),
-                LocalDateTime.now(),
-                new Student(data.finishUserId()),
-                LocalDateTime.now()
+                null,
+                null,
+                data.limitTime()
         );
     }
     public Task(DataUpdateTask data) {

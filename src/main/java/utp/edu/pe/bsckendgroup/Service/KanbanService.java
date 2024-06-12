@@ -73,7 +73,7 @@ public class KanbanService {
     public List<DataParticipationStudent> getParticipation(Long idKanban) {
         Kanban kanban = kanbanRepository.findById(idKanban)
                 .orElseThrow(() -> new RuntimeException("Kanban not found"));
-        List<DataParticipationStudent> participationStudents = taskRepository.getPartisipation(kanban.getId());
+        List<DataParticipationStudent> participationStudents = taskRepository.getParticipation(kanban.getId());
 
         if (participationStudents.isEmpty()) {
             return participationStudents;

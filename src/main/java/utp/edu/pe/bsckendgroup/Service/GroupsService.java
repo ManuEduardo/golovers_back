@@ -46,6 +46,7 @@ public class GroupsService {
                 .orElseThrow(() -> new RuntimeException("Student not found"));
 
         if (groupUtpRepository.findByName(group.name()).isPresent()) {
+            new RuntimeException("Group already exists");
             return null;
         }
 
@@ -55,10 +56,10 @@ public class GroupsService {
         newGroupUtp.setCode(generateUniqueCode());
         groupUtpRepository.save(newGroupUtp);
 
-        Kanban kanban = createKanban(newGroupUtp.getId());
-        if (kanban != null) {
-            createColumnsKanban(kanban.getId());
-        }
+        Kanban kanban = kanbanRepository.findByNameKanban(createKanban(newGroupUtp.getId()).getName())
+                .orElseThrow(() -> new RuntimeException("Kanban not found"));
+
+        createColumnsKanban(kanban.getId());
 
         DataRegisterUserGroup userGroup = new DataRegisterUserGroup(
                 student.getId(),
@@ -151,11 +152,12 @@ public class GroupsService {
     private void ensureRolesExist() {
         List<String> roleNames = Arrays.asList("ROLE_LEADER", "ROLE_MEMBER");
         for (String roleName : roleNames) {
-            if (roleRepository.findByName(roleName).isEmpty()) {
-                Role newRole = new Role();
-                newRole.setName(roleName);
-                roleRepository.save(newRole);
-            }
+            roleRepository.findByName(roleName)
+                    .orElseGet(() -> {
+                        Role newRole = new Role();
+                        newRole.setName(roleName);
+                        return roleRepository.save(newRole);
+                    });
         }
     }
 
@@ -203,7 +205,6 @@ public class GroupsService {
                 })
                 .orElse(false);
     }
-
 
     private Kanban createKanban(Long idGroup) {
         return groupUtpRepository.findById(idGroup)

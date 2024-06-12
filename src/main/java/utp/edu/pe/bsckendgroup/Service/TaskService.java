@@ -12,6 +12,7 @@ import utp.edu.pe.bsckendgroup.Domain.Student.StudentRepository;
 import utp.edu.pe.bsckendgroup.Domain.Task.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TaskService {
@@ -24,7 +25,7 @@ public class TaskService {
     @Autowired
     private KanbanRepository kanbanRepository;
 
-    public DataListTask create(DataRegisterTask data) {
+    public DataListTask create(@NotNull DataRegisterTask data) {
 
         Kanban kanban = kanbanRepository.findById(data.kanbanId())
                 .orElseThrow(() -> new RuntimeException("Kanban not found"));
@@ -44,6 +45,7 @@ public class TaskService {
                     .orElseThrow(() -> new RuntimeException("Task not found"));
         ColumnKanban columnKanban = columnKanbanRepository.findByIdOrder(task.getKanban().getId(), data.oderColumn())
                 .orElseThrow(() -> new RuntimeException("Column not found"));
+
         task.setColumKanban(columnKanban);
         return new DataListTask(taskRepository.save(task));
     }
@@ -64,16 +66,28 @@ public class TaskService {
         return taskRepository.findByKanbanId(id).stream().map(DataListTask::new).toList();
     }
 
-    public List<DataParticipationStudent> fisnishTask(DataFinishTask data){
+    public List<DataParticipationStudent> finishTask(@NotNull DataFinishTask data) {
         Task task = taskRepository.findById(data.id())
                 .orElseThrow(() -> new RuntimeException("Task not found"));
         Student finishStudent = studentRepository.findById(data.finishUserId())
                 .orElseThrow(() -> new RuntimeException("Student not found"));
-
         task.setColumKanban(new ColumnKanban(data.columnKanbanId()));
         task.setFinishStudent(finishStudent);
         taskRepository.save(task);
-        return taskRepository.getPartisipation(task.getKanban().getId());
+
+        List<DataParticipationStudent> participationStudents = taskRepository.getParticipation(task.getKanban().getId());
+
+        if (participationStudents.isEmpty()) {
+            return participationStudents;
+        }
+        double totalPriority = participationStudents.get(0).totalPriority();
+        List<DataParticipationStudent> participationInPercentage = participationStudents.stream()
+                .map(student -> {
+                    double participationPercentage = (student.sumPriority() / totalPriority) * 100;
+                    return new DataParticipationStudent(student.studentId(), participationPercentage, totalPriority);
+                })
+                .collect(Collectors.toList());
+        return participationInPercentage;
     }
 
 }
