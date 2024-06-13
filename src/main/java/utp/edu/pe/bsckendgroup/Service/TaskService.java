@@ -75,7 +75,7 @@ public class TaskService {
         task.setFinishStudent(finishStudent);
         taskRepository.save(task);
 
-        List<DataParticipationStudent> participationStudents = taskRepository.getParticipation(task.getKanban().getId());
+        List<DataParticipationStudent> participationStudents = taskRepository.getParticipation(task.getKanban().getId(), finishStudent.getId());
 
         if (participationStudents.isEmpty()) {
             return participationStudents;

@@ -16,9 +16,10 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
         FROM Task t
         JOIN t.finishStudent f
         WHERE t.kanban.id = :idKanban
+        AND f.id = :id
         GROUP BY f.id
     """)
-    List<DataParticipationStudent> getParticipation(Long idKanban);
+    List<DataParticipationStudent> getParticipation(Long idKanban, Long id);
 
     @Query("SELECT t FROM Task t WHERE t.kanban.id = ?1")
     List<Task> findByKanbanId(Long id);

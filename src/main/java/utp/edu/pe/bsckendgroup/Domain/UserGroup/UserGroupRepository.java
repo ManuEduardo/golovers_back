@@ -54,4 +54,11 @@ public interface UserGroupRepository extends JpaRepository<UserGroup, Long> {
         WHERE ug.student = :student AND ug.groupUtp = :groupUtp
     """)
     boolean existsStudentInGroup(@Param("student") Student student, @Param("groupUtp") GroupUtp groupUtp);
+
+    @Query("""
+            SELECT s FROM UserGroup ug
+            JOIN Student s ON ug.student.id = s.id
+            WHERE ug.groupUtp.id = ?1
+        """)
+    List<Student> findStudentsByGroup(Long id);
 }

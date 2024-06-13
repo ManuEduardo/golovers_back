@@ -8,11 +8,13 @@ import utp.edu.pe.bsckendgroup.Domain.Kanban.DataListKanban;
 import utp.edu.pe.bsckendgroup.Domain.Kanban.DataRegisterKanban;
 import utp.edu.pe.bsckendgroup.Domain.Kanban.Kanban;
 import utp.edu.pe.bsckendgroup.Domain.Kanban.KanbanRepository;
+import utp.edu.pe.bsckendgroup.Domain.Student.Student;
 import utp.edu.pe.bsckendgroup.Domain.Student.StudentRepository;
 import utp.edu.pe.bsckendgroup.Domain.Task.DataListTask;
 import utp.edu.pe.bsckendgroup.Domain.Task.DataParticipationStudent;
 import utp.edu.pe.bsckendgroup.Domain.Task.Task;
 import utp.edu.pe.bsckendgroup.Domain.Task.TaskRepository;
+import utp.edu.pe.bsckendgroup.Domain.UserGroup.UserGroupRepository;
 import utp.edu.pe.bsckendgroup.ServicesDto.DataResponseColumnsKanban;
 import utp.edu.pe.bsckendgroup.ServicesDto.DataListKanbanAnColumns;
 
@@ -31,6 +33,8 @@ public class KanbanService {
     private TaskRepository taskRepository;
     @Autowired
     private ColumnKanbanRepository columnKanbanRepository;
+    @Autowired
+    private UserGroupRepository userGroupRepository;
 
     public boolean createKanban(DataRegisterKanban kanban) {
         Kanban newKanban = new Kanban(kanban);
@@ -68,12 +72,22 @@ public class KanbanService {
         return new DataListKanbanAnColumns(dataListKanban, columnKanbans);
     }
 
-
-
     public List<DataParticipationStudent> getParticipation(Long idKanban) {
         Kanban kanban = kanbanRepository.findById(idKanban)
                 .orElseThrow(() -> new RuntimeException("Kanban not found"));
-        List<DataParticipationStudent> participationStudents = taskRepository.getParticipation(kanban.getId());
+
+        List<Student> students = userGroupRepository.findStudentsByGroup(kanban.getGroupUtp().getId());
+
+        List<DataParticipationStudent> participationStudents = students.stream()
+                .map(student -> {
+                    double participationPercentage = taskRepository.getParticipation(idKanban, student.getId()).stream()
+                            .filter(participation -> participation.studentId().equals(student.getId()))
+                            .mapToDouble(DataParticipationStudent::sumPriority)
+                            .findFirst()
+                            .orElse(0);
+                    return new DataParticipationStudent(student.getId(), participationPercentage, 0);
+                })
+                .collect(Collectors.toList());
 
         if (participationStudents.isEmpty()) {
             return participationStudents;
